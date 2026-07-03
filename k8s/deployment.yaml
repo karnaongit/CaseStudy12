@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-notebook-analytics
+  namespace: default
+  labels:
+    app: financial-analytics
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: financial-analytics
+  template:
+    metadata:
+      labels:
+        app: financial-analytics
+    spec:
+      containers:
+      - name: spark-container
+        image: yourgithubusername/spark-notebook-analytics:latest
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-analytics-service
+  namespace: default
+spec:
+  selector:
+    app: financial-analytics
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 4040
+  type: NodePort
